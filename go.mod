@@ -1,4 +1,4 @@
-module github.com/argoproj/pkg
+module github.com/Elentary/pkg
 
 go 1.14
 
