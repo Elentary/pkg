@@ -68,6 +68,7 @@ type EncryptOpts struct {
 
 type S3ClientOpts struct {
 	Endpoint        string
+	VirtualHost     bool
 	Region          string
 	Secure          bool
 	AccessKey       string
@@ -147,7 +148,16 @@ func NewS3Client(ctx context.Context, opts S3ClientOpts) (S3Client, error) {
 		return nil, errors.WithStack(err)
 	}
 
-	minioOpts := &minio.Options{Creds: credentials, Secure: s3cli.Secure, Region: s3cli.Region, BucketLookup: minio.BucketLookupDNS}
+	log.Error("amareelez was here v1")
+	var bucketLookupType minio.BucketLookupType
+	if s3cli.VirtualHost {
+		log.Error("DNS way")
+		bucketLookupType = minio.BucketLookupDNS
+	} else {
+		log.Error("usual way")
+		bucketLookupType = minio.BucketLookupPath
+	}
+	minioOpts := &minio.Options{Creds: credentials, Secure: s3cli.Secure, Region: s3cli.Region, BucketLookup: bucketLookupType}
 	minioClient, err = minio.New(s3cli.Endpoint, minioOpts)
 	if err != nil {
 		return nil, errors.WithStack(err)
